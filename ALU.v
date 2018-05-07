@@ -66,6 +66,8 @@ always @(*)
             end
   endcase
 
+  //$display("temp_out :%d", temp_out);
+
   //determining n and z
   if(temp_out == 32'b0) z = 1'b1;
   else z = 1'b0;

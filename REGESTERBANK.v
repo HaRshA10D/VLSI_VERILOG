@@ -40,25 +40,49 @@ always @(*)
   default : begin b_select_decoded = 9'b000000000; end
   endcase
   end
-//determining A and B bus outputs
-always @(*)
-  begin
-  a_data = h;
-  case(b_select_decoded)
-  9'b000000001 : begin b = mdr; end
-  9'b000000010 : begin b = pc; end
-  9'b000000100 : begin b = mbr; end
-  9'b000001000 : begin b = mbr; end
-  9'b000010000 : begin b = sp; end
-  9'b000100000 : begin b = lv; end
-  9'b001000000 : begin b = cpp; end
-  9'b010000000 : begin b = tos; end
-  9'b100000000 : begin b = opc; end
-  endcase
-  end
-//Dealing with data inside c bus
 
-always @(posedge clock)
+  //Dealing with data inside c bus
+
+  always @(posedge clock)
+    begin
+    if(reset == 1)
+      begin
+      mar <= 32'd0;
+      mdr <= 32'd0;
+      pc <= 32'd0;
+      mbr <= 32'd0;
+      sp <= 32'd0;
+      lv <= 32'd0;
+      cpp <= 32'd0;
+      tos <= 32'd0;
+      opc <= 32'd0;
+      h <= 32'd0;
+      end
+    else
+      begin
+      if(c_select[0])
+        begin mar = bus_c_data; end
+      if(c_select[1])
+        begin mdr = bus_c_data; end
+      if(c_select[2])
+        begin pc = bus_c_data; end
+      if(c_select[3])
+        begin sp = bus_c_data; end
+      if(c_select[4])
+        begin lv = bus_c_data; end
+      if(c_select[5])
+        begin cpp = bus_c_data; end
+      if(c_select[6])
+        begin tos = bus_c_data; end
+      if(c_select[7])
+        begin opc = bus_c_data; end
+      if(c_select[8])
+        begin h = bus_c_data; end
+      end
+    end
+
+//determining A and B bus outputs
+always @(negedge clock)
   begin
   if(reset == 1)
     begin
@@ -75,26 +99,21 @@ always @(posedge clock)
     end
   else
     begin
-    if(c_select[0])
-      begin mar = bus_c_data; end
-    if(c_select[1])
-      begin mdr = bus_c_data; end
-    if(c_select[2])
-      begin pc = bus_c_data; end
-    if(c_select[3])
-      begin sp = bus_c_data; end
-    if(c_select[4])
-      begin lv = bus_c_data; end
-    if(c_select[5])
-      begin cpp = bus_c_data; end
-    if(c_select[6])
-      begin tos = bus_c_data; end
-    if(c_select[7])
-      begin opc = bus_c_data; end
-    if(c_select[8])
-      begin h = bus_c_data; end
+    a_data = h;
+    case(b_select_decoded)
+    9'b000000001 : begin b_data = mdr; end
+    9'b000000010 : begin b_data = pc; end
+    9'b000000100 : begin b_data = mbr; end
+    9'b000001000 : begin b_data = mbr; end
+    9'b000010000 : begin b_data = sp; end
+    9'b000100000 : begin b_data = lv; end
+    9'b001000000 : begin b_data = cpp; end
+    9'b010000000 : begin b_data = tos; end
+    9'b100000000 : begin b_data = opc; end
+    endcase
     end
   end
+
 
 
 endmodule
